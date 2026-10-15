@@ -1,0 +1,1897 @@
+{
+  "info": {
+    "name": "Onelign PMS API",
+    "description": "Multi-tenant Agile Project Management System API\n\n## Authentication\nThis API uses Microsoft Entra ID (Azure AD) for authentication. Include the Bearer token in the Authorization header.\n\n## Multi-Tenancy\nAll API calls are automatically scoped to the user's organization based on the Azure tenant ID in the JWT token.",
+    "_postman_id": "onelign-pms-api-collection",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "_postman_variable_scope": "collection",
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{access_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3000/api",
+      "type": "string"
+    },
+    {
+      "key": "access_token",
+      "value": "your-azure-ad-access-token",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "description": "Authentication endpoints",
+      "item": [
+        {
+          "name": "Get Current User",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/auth/me",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "me"]
+            },
+            "description": "Get the current authenticated user's profile. This also triggers auto-onboarding for new users."
+          },
+          "response": [
+            {
+              "name": "200 OK – Current User",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": { "raw": "{{base_url}}/auth/me", "host": ["{{base_url}}"], "path": ["auth", "me"] }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "cookie": [],
+              "body": "{\n  \"id\": \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\",\n  \"orgId\": \"org-uuid-1234\",\n  \"email\": \"john.doe@acme.com\",\n  \"name\": \"John Doe\",\n  \"role\": \"ADMIN\",\n  \"status\": \"ACTIVE\",\n  \"createdAt\": \"2026-01-01T09:00:00.000Z\",\n  \"organization\": {\n    \"id\": \"org-uuid-1234\",\n    \"name\": \"Acme Corporation\",\n    \"azureTenantId\": \"7915d0a8-0a13-4824-ba52-43a1ad694c42\",\n    \"status\": \"ACTIVE\",\n    \"createdAt\": \"2026-01-01T08:00:00.000Z\"\n  }\n}"
+            },
+            {
+              "name": "401 Unauthorized",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": { "raw": "{{base_url}}/auth/me", "host": ["{{base_url}}"], "path": ["auth", "me"] }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "cookie": [],
+              "body": "{\n  \"statusCode\": 401,\n  \"message\": \"Unauthorized\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Verify Token",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/auth/verify",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "verify"]
+            },
+            "description": "Verify the current token is valid."
+          },
+          "response": [
+            {
+              "name": "200 OK – Token Valid",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": { "raw": "{{base_url}}/auth/verify", "host": ["{{base_url}}"], "path": ["auth", "verify"] }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "cookie": [],
+              "body": "{\n  \"valid\": true,\n  \"user\": {\n    \"id\": \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\",\n    \"email\": \"john.doe@acme.com\",\n    \"name\": \"John Doe\",\n    \"role\": \"ADMIN\"\n  }\n}"
+            },
+            {
+              "name": "401 Unauthorized",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": { "raw": "{{base_url}}/auth/verify", "host": ["{{base_url}}"], "path": ["auth", "verify"] }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "cookie": [],
+              "body": "{\n  \"statusCode\": 401,\n  \"message\": \"Unauthorized\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "description": "User management endpoints",
+      "item": [
+        {
+          "name": "Get My Profile",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/users/me",
+              "host": ["{{base_url}}"],
+              "path": ["users", "me"]
+            },
+            "description": "Get the current user's profile."
+          },
+          "response": [
+            {
+              "name": "200 OK – My Profile",
+              "originalRequest": { "method": "GET", "header": [], "url": { "raw": "{{base_url}}/users/me", "host": ["{{base_url}}"], "path": ["users", "me"] } },
+              "status": "OK", "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "cookie": [],
+              "body": "{\n  \"id\": \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\",\n  \"orgId\": \"org-uuid-1234\",\n  \"email\": \"john.doe@acme.com\",\n  \"name\": \"John Doe\",\n  \"role\": \"ADMIN\",\n  \"status\": \"ACTIVE\",\n  \"createdAt\": \"2026-01-01T09:00:00.000Z\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Update My Profile",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"firstName\": \"John\",\n  \"lastName\": \"Doe\",\n  \"phone\": \"+1234567890\"\n}" },
+            "url": {
+              "raw": "{{base_url}}/users/me",
+              "host": ["{{base_url}}"],
+              "path": ["users", "me"]
+            },
+            "description": "Update the current user's profile."
+          },
+          "response": [
+            {
+              "name": "200 OK – Updated Profile",
+              "originalRequest": { "method": "PATCH", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"firstName\": \"John\",\n  \"lastName\": \"Doe\",\n  \"phone\": \"+1234567890\"\n}" }, "url": { "raw": "{{base_url}}/users/me", "host": ["{{base_url}}"], "path": ["users", "me"] } },
+              "status": "OK", "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "cookie": [],
+              "body": "{\n  \"id\": \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\",\n  \"orgId\": \"org-uuid-1234\",\n  \"email\": \"john.doe@acme.com\",\n  \"name\": \"John Doe\",\n  \"role\": \"ADMIN\",\n  \"status\": \"ACTIVE\",\n  \"createdAt\": \"2026-01-01T09:00:00.000Z\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get My Projects",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/users/me/projects",
+              "host": ["{{base_url}}"],
+              "path": ["users", "me", "projects"]
+            },
+            "description": "Get all projects the current user is a member of."
+          },
+          "response": [
+            {
+              "name": "200 OK – My Projects",
+              "originalRequest": { "method": "GET", "header": [], "url": { "raw": "{{base_url}}/users/me/projects", "host": ["{{base_url}}"], "path": ["users", "me", "projects"] } },
+              "status": "OK", "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "cookie": [],
+              "body": "[\n  {\n    \"id\": \"proj-uuid-0001\",\n    \"orgId\": \"org-uuid-1234\",\n    \"name\": \"Mobile App Development\",\n    \"projectCode\": \"MOB\",\n    \"businessUnit\": \"Engineering\",\n    \"managerId\": \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\",\n    \"status\": \"ACTIVE\",\n    \"createdAt\": \"2026-01-10T08:00:00.000Z\",\n    \"projectRole\": \"DEVELOPER\"\n  }\n]"
+            }
+          ]
+        },
+        {
+          "name": "Get My Stats",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/users/me/stats",
+              "host": ["{{base_url}}"],
+              "path": ["users", "me", "stats"]
+            },
+            "description": "Returns a summary for the authenticated user: projects assigned, open/completed tasks, total minutes logged, completion rate, and active projects with roles."
+          },
+          "response": [
+            {
+              "name": "200 OK – My Stats",
+              "originalRequest": { "method": "GET", "header": [], "url": { "raw": "{{base_url}}/users/me/stats", "host": ["{{base_url}}"], "path": ["users", "me", "stats"] } },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "cookie": [],
+              "body": "{\n  \"totalProjectsAssigned\": 3,\n  \"activeProjectsCount\": 2,\n  \"totalTasksAssigned\": 18,\n  \"openTasks\": 12,\n  \"completedTasks\": 6,\n  \"completionRate\": 33.33,\n  \"totalMinutesLogged\": 4320,\n  \"tasksByStatus\": {\n    \"TODO\": 5,\n    \"IN_PROGRESS\": 4,\n    \"IN_REVIEW\": 2,\n    \"QA\": 1,\n    \"DONE\": 6,\n    \"BLOCKED\": 0\n  },\n  \"activeProjects\": [\n    {\n      \"projectId\": \"proj-uuid-0001\",\n      \"name\": \"Mobile App Development\",\n      \"projectCode\": \"MOB\",\n      \"projectStatus\": \"ACTIVE\",\n      \"projectRole\": \"DEVELOPER\",\n      \"managerId\": \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\"\n    },\n    {\n      \"projectId\": \"proj-uuid-0002\",\n      \"name\": \"Web Portal Redesign\",\n      \"projectCode\": \"WPR\",\n      \"projectStatus\": \"ACTIVE\",\n      \"projectRole\": \"TESTER\",\n      \"managerId\": \"b2c3d4e5-f6a7-8901-bcde-f12345678901\"\n    }\n  ]\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get My Daily Summaries",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/users/me/daily-summaries?startDate=2024-01-01&endDate=2024-12-31",
+              "host": ["{{base_url}}"],
+              "path": ["users", "me", "daily-summaries"],
+              "query": [
+                { "key": "startDate", "value": "2024-01-01" },
+                { "key": "endDate", "value": "2024-12-31" }
+              ]
+            },
+            "description": "Get the current user's daily work summaries."
+          },
+          "response": [
+            {
+              "name": "200 OK – Daily Summaries",
+              "originalRequest": { "method": "GET", "header": [], "url": { "raw": "{{base_url}}/users/me/daily-summaries?startDate=2024-01-01&endDate=2024-12-31", "host": ["{{base_url}}"], "path": ["users", "me", "daily-summaries"], "query": [{ "key": "startDate", "value": "2024-01-01" }, { "key": "endDate", "value": "2024-12-31" }] } },
+              "status": "OK", "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "cookie": [],
+              "body": "[\n  {\n    \"id\": \"sum-uuid-0001\",\n    \"userId\": \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\",\n    \"orgId\": \"org-uuid-1234\",\n    \"summaryDate\": \"2026-01-15\",\n    \"totalMinutes\": 480,\n    \"colorCode\": \"GREEN\",\n    \"createdAt\": \"2026-01-15T17:00:00.000Z\"\n  },\n  {\n    \"id\": \"sum-uuid-0002\",\n    \"userId\": \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\",\n    \"orgId\": \"org-uuid-1234\",\n    \"summaryDate\": \"2026-01-16\",\n    \"totalMinutes\": 300,\n    \"colorCode\": \"YELLOW\",\n    \"createdAt\": \"2026-01-16T17:00:00.000Z\"\n  }\n]"
+            }
+          ]
+        },
+        {
+          "name": "Get All Users (Admin/Manager)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/users?status=ACTIVE&page=1&limit=20",
+              "host": ["{{base_url}}"],
+              "path": ["users"],
+              "query": [
+                { "key": "status", "value": "ACTIVE" },
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "20" }
+              ]
+            },
+            "description": "Get all users in the organization. Requires Admin or Manager role."
+          },
+          "response": [
+            {
+              "name": "200 OK – User List",
+              "originalRequest": { "method": "GET", "header": [], "url": { "raw": "{{base_url}}/users?status=ACTIVE&page=1&limit=20", "host": ["{{base_url}}"], "path": ["users"], "query": [{ "key": "status", "value": "ACTIVE" }, { "key": "page", "value": "1" }, { "key": "limit", "value": "20" }] } },
+              "status": "OK", "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "cookie": [],
+              "body": "{\n  \"data\": [\n    {\n      \"id\": \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\",\n      \"orgId\": \"org-uuid-1234\",\n      \"email\": \"john.doe@acme.com\",\n      \"name\": \"John Doe\",\n      \"role\": \"ADMIN\",\n      \"status\": \"ACTIVE\",\n      \"createdAt\": \"2026-01-01T09:00:00.000Z\"\n    },\n    {\n      \"id\": \"b2c3d4e5-f6a7-8901-bcde-f12345678901\",\n      \"orgId\": \"org-uuid-1234\",\n      \"email\": \"jane.smith@acme.com\",\n      \"name\": \"Jane Smith\",\n      \"role\": \"DEVELOPER\",\n      \"status\": \"ACTIVE\",\n      \"createdAt\": \"2026-01-02T09:00:00.000Z\"\n    }\n  ],\n  \"total\": 2,\n  \"page\": 1,\n  \"limit\": 20\n}"
+            },
+            {
+              "name": "403 Forbidden",
+              "originalRequest": { "method": "GET", "header": [], "url": { "raw": "{{base_url}}/users?status=ACTIVE&page=1&limit=20", "host": ["{{base_url}}"], "path": ["users"] } },
+              "status": "Forbidden", "code": 403,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "cookie": [],
+              "body": "{\n  \"statusCode\": 403,\n  \"message\": \"Forbidden resource\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Update User Role (Admin)",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"role\": \"MANAGER\"\n}" },
+            "url": {
+              "raw": "{{base_url}}/users/:userId/role",
+              "host": ["{{base_url}}"],
+              "path": ["users", ":userId", "role"],
+              "variable": [{ "key": "userId", "value": "user-uuid-here" }]
+            },
+            "description": "Update a user's role. Requires Admin role."
+          },
+          "response": [
+            {
+              "name": "200 OK – Role Updated",
+              "originalRequest": { "method": "PATCH", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"role\": \"MANAGER\"\n}" }, "url": { "raw": "{{base_url}}/users/:userId/role", "host": ["{{base_url}}"], "path": ["users", ":userId", "role"], "variable": [{ "key": "userId", "value": "user-uuid-here" }] } },
+              "status": "OK", "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "cookie": [],
+              "body": "{\n  \"id\": \"b2c3d4e5-f6a7-8901-bcde-f12345678901\",\n  \"orgId\": \"org-uuid-1234\",\n  \"email\": \"jane.smith@acme.com\",\n  \"name\": \"Jane Smith\",\n  \"role\": \"MANAGER\",\n  \"status\": \"ACTIVE\",\n  \"createdAt\": \"2026-01-02T09:00:00.000Z\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Projects",
+      "description": "Project management endpoints",
+      "item": [
+        {
+          "name": "Create Project",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"projectName\": \"Mobile App Development\",\n  \"projectCode\": \"MOB\",\n  \"description\": \"Development of the mobile application for iOS and Android platforms\",\n  \"startDate\": \"2024-01-15\",\n  \"targetEndDate\": \"2024-06-30\",\n  \"visibility\": \"PRIVATE\"\n}" },
+            "url": { "raw": "{{base_url}}/projects", "host": ["{{base_url}}"], "path": ["projects"] },
+            "description": "Create a new project. Requires Admin or Manager role."
+          },
+          "response": [
+            {
+              "name": "201 Created – Project",
+              "originalRequest": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"projectName\": \"Mobile App Development\",\n  \"projectCode\": \"MOB\"\n}" }, "url": { "raw": "{{base_url}}/projects", "host": ["{{base_url}}"], "path": ["projects"] } },
+              "status": "Created", "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "cookie": [],
+              "body": "{\n  \"id\": \"proj-uuid-0001\",\n  \"orgId\": \"org-uuid-1234\",\n  \"name\": \"Mobile App Development\",\n  \"projectCode\": \"MOB\",\n  \"businessUnit\": null,\n  \"managerId\": \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\",\n  \"status\": \"ACTIVE\",\n  \"createdAt\": \"2026-01-10T08:00:00.000Z\"\n}"
+            },
+            {
+              "name": "409 Conflict – Code Taken",
+              "originalRequest": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"projectCode\": \"MOB\"\n}" }, "url": { "raw": "{{base_url}}/projects", "host": ["{{base_url}}"], "path": ["projects"] } },
+              "status": "Conflict", "code": 409,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "cookie": [],
+              "body": "{\n  \"statusCode\": 409,\n  \"message\": \"Project code MOB already exists\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get All Projects",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/projects?status=ACTIVE&page=1&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["projects"],
+              "query": [{ "key": "status", "value": "ACTIVE" }, { "key": "page", "value": "1" }, { "key": "limit", "value": "10" }]
+            },
+            "description": "Get all projects in the organization."
+          },
+          "response": [
+            {
+              "name": "200 OK – Project List",
+              "originalRequest": { "method": "GET", "header": [], "url": { "raw": "{{base_url}}/projects?status=ACTIVE&page=1&limit=10", "host": ["{{base_url}}"], "path": ["projects"] } },
+              "status": "OK", "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "cookie": [],
+              "body": "{\n  \"data\": [\n    {\n      \"id\": \"proj-uuid-0001\",\n      \"orgId\": \"org-uuid-1234\",\n      \"name\": \"Mobile App Development\",\n      \"projectCode\": \"MOB\",\n      \"businessUnit\": \"Engineering\",\n      \"managerId\": \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\",\n      \"status\": \"ACTIVE\",\n      \"createdAt\": \"2026-01-10T08:00:00.000Z\"\n    }\n  ],\n  \"total\": 1,\n  \"page\": 1,\n  \"limit\": 10\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get Project by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/projects/:projectId",
+              "host": ["{{base_url}}"],
+              "path": ["projects", ":projectId"],
+              "variable": [{ "key": "projectId", "value": "project-uuid-here" }]
+            },
+            "description": "Get a specific project by ID."
+          },
+          "response": [
+            {
+              "name": "200 OK – Project Detail",
+              "originalRequest": { "method": "GET", "header": [], "url": { "raw": "{{base_url}}/projects/:projectId", "host": ["{{base_url}}"], "path": ["projects", ":projectId"], "variable": [{ "key": "projectId", "value": "proj-uuid-0001" }] } },
+              "status": "OK", "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "cookie": [],
+              "body": "{\n  \"id\": \"proj-uuid-0001\",\n  \"orgId\": \"org-uuid-1234\",\n  \"name\": \"Mobile App Development\",\n  \"projectCode\": \"MOB\",\n  \"businessUnit\": \"Engineering\",\n  \"managerId\": \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\",\n  \"status\": \"ACTIVE\",\n  \"createdAt\": \"2026-01-10T08:00:00.000Z\",\n  \"manager\": {\n    \"id\": \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\",\n    \"name\": \"John Doe\",\n    \"email\": \"john.doe@acme.com\"\n  },\n  \"sprints\": [\n    { \"id\": \"spr-uuid-0001\", \"name\": \"Sprint 1\", \"status\": \"ACTIVE\" }\n  ],\n  \"userMappings\": [\n    { \"userId\": \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\", \"projectRole\": \"MANAGER\" }\n  ]\n}"
+            },
+            {
+              "name": "404 Not Found",
+              "originalRequest": { "method": "GET", "header": [], "url": { "raw": "{{base_url}}/projects/:projectId", "host": ["{{base_url}}"], "path": ["projects", ":projectId"], "variable": [{ "key": "projectId", "value": "unknown" }] } },
+              "status": "Not Found", "code": 404,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "cookie": [],
+              "body": "{\n  \"statusCode\": 404,\n  \"message\": \"Project not found\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Update Project",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"projectName\": \"Mobile App Development v2\",\n  \"description\": \"Updated description\"\n}" },
+            "url": {
+              "raw": "{{base_url}}/projects/:projectId",
+              "host": ["{{base_url}}"],
+              "path": ["projects", ":projectId"],
+              "variable": [{ "key": "projectId", "value": "project-uuid-here" }]
+            },
+            "description": "Update a project. Requires Admin or Manager role."
+          },
+          "response": [
+            {
+              "name": "200 OK – Updated Project",
+              "originalRequest": { "method": "PATCH", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"projectName\": \"Mobile App Development v2\"\n}" }, "url": { "raw": "{{base_url}}/projects/:projectId", "host": ["{{base_url}}"], "path": ["projects", ":projectId"], "variable": [{ "key": "projectId", "value": "proj-uuid-0001" }] } },
+              "status": "OK", "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "cookie": [],
+              "body": "{\n  \"id\": \"proj-uuid-0001\",\n  \"orgId\": \"org-uuid-1234\",\n  \"name\": \"Mobile App Development v2\",\n  \"projectCode\": \"MOB\",\n  \"businessUnit\": \"Engineering\",\n  \"managerId\": \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\",\n  \"status\": \"ACTIVE\",\n  \"createdAt\": \"2026-01-10T08:00:00.000Z\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Add Team Member",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"userId\": \"user-uuid-here\",\n  \"projectRole\": \"DEVELOPER\"\n}" },
+            "url": {
+              "raw": "{{base_url}}/projects/:projectId/team",
+              "host": ["{{base_url}}"],
+              "path": ["projects", ":projectId", "team"],
+              "variable": [{ "key": "projectId", "value": "project-uuid-here" }]
+            },
+            "description": "Add a team member to the project."
+          },
+          "response": [
+            {
+              "name": "201 Created – Team Member Added",
+              "originalRequest": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"userId\": \"b2c3d4e5-f6a7-8901-bcde-f12345678901\",\n  \"projectRole\": \"DEVELOPER\"\n}" }, "url": { "raw": "{{base_url}}/projects/:projectId/team", "host": ["{{base_url}}"], "path": ["projects", ":projectId", "team"], "variable": [{ "key": "projectId", "value": "proj-uuid-0001" }] } },
+              "status": "Created", "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "cookie": [],
+              "body": "{\n  \"id\": \"map-uuid-0001\",\n  \"projectId\": \"proj-uuid-0001\",\n  \"userId\": \"b2c3d4e5-f6a7-8901-bcde-f12345678901\",\n  \"projectRole\": \"DEVELOPER\",\n  \"createdAt\": \"2026-01-11T08:00:00.000Z\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get Project Team",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/projects/:projectId/team",
+              "host": ["{{base_url}}"],
+              "path": ["projects", ":projectId", "team"],
+              "variable": [{ "key": "projectId", "value": "project-uuid-here" }]
+            },
+            "description": "Get all team members of a project."
+          },
+          "response": [
+            {
+              "name": "200 OK – Project Team",
+              "originalRequest": { "method": "GET", "header": [], "url": { "raw": "{{base_url}}/projects/:projectId/team", "host": ["{{base_url}}"], "path": ["projects", ":projectId", "team"], "variable": [{ "key": "projectId", "value": "proj-uuid-0001" }] } },
+              "status": "OK", "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "cookie": [],
+              "body": "[\n  {\n    \"id\": \"map-uuid-0001\",\n    \"projectId\": \"proj-uuid-0001\",\n    \"userId\": \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\",\n    \"projectRole\": \"MANAGER\",\n    \"createdAt\": \"2026-01-10T08:00:00.000Z\",\n    \"user\": {\n      \"id\": \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\",\n      \"name\": \"John Doe\",\n      \"email\": \"john.doe@acme.com\",\n      \"role\": \"ADMIN\"\n    }\n  },\n  {\n    \"id\": \"map-uuid-0002\",\n    \"projectId\": \"proj-uuid-0001\",\n    \"userId\": \"b2c3d4e5-f6a7-8901-bcde-f12345678901\",\n    \"projectRole\": \"DEVELOPER\",\n    \"createdAt\": \"2026-01-11T08:00:00.000Z\",\n    \"user\": {\n      \"id\": \"b2c3d4e5-f6a7-8901-bcde-f12345678901\",\n      \"name\": \"Jane Smith\",\n      \"email\": \"jane.smith@acme.com\",\n      \"role\": \"DEVELOPER\"\n    }\n  }\n]"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Sprints",
+      "description": "Sprint management endpoints",
+      "item": [
+        {
+          "name": "Create Sprint",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"projectId\": \"project-uuid-here\",\n  \"sprintName\": \"Sprint 1\",\n  \"startDate\": \"2024-01-15\",\n  \"endDate\": \"2024-01-29\",\n  \"goal\": \"Complete user authentication module\"\n}" },
+            "url": { "raw": "{{base_url}}/sprints", "host": ["{{base_url}}"], "path": ["sprints"] },
+            "description": "Create a new sprint."
+          },
+          "response": [
+            {
+              "name": "201 Created – Sprint",
+              "originalRequest": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"projectId\": \"proj-uuid-0001\",\n  \"sprintName\": \"Sprint 1\",\n  \"startDate\": \"2026-01-15\",\n  \"endDate\": \"2026-01-29\"\n}" }, "url": { "raw": "{{base_url}}/sprints", "host": ["{{base_url}}"], "path": ["sprints"] } },
+              "status": "Created", "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "cookie": [],
+              "body": "{\n  \"id\": \"spr-uuid-0001\",\n  \"projectId\": \"proj-uuid-0001\",\n  \"name\": \"Sprint 1\",\n  \"startDate\": \"2026-01-15\",\n  \"endDate\": \"2026-01-29\",\n  \"status\": \"PLANNED\",\n  \"createdAt\": \"2026-01-10T09:00:00.000Z\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get Sprints by Project",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/sprints?projectId=project-uuid-here&status=ACTIVE",
+              "host": ["{{base_url}}"],
+              "path": ["sprints"],
+              "query": [{ "key": "projectId", "value": "project-uuid-here" }, { "key": "status", "value": "ACTIVE" }]
+            },
+            "description": "Get all sprints for a project."
+          },
+          "response": [
+            {
+              "name": "200 OK – Sprint List",
+              "originalRequest": { "method": "GET", "header": [], "url": { "raw": "{{base_url}}/sprints?projectId=proj-uuid-0001&status=ACTIVE", "host": ["{{base_url}}"], "path": ["sprints"], "query": [{ "key": "projectId", "value": "proj-uuid-0001" }, { "key": "status", "value": "ACTIVE" }] } },
+              "status": "OK", "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "cookie": [],
+              "body": "[\n  {\n    \"id\": \"spr-uuid-0001\",\n    \"projectId\": \"proj-uuid-0001\",\n    \"name\": \"Sprint 1\",\n    \"startDate\": \"2026-01-15\",\n    \"endDate\": \"2026-01-29\",\n    \"status\": \"ACTIVE\",\n    \"createdAt\": \"2026-01-10T09:00:00.000Z\"\n  }\n]"
+            }
+          ]
+        },
+        {
+          "name": "Start Sprint",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/sprints/:sprintId/start",
+              "host": ["{{base_url}}"],
+              "path": ["sprints", ":sprintId", "start"],
+              "variable": [{ "key": "sprintId", "value": "sprint-uuid-here" }]
+            },
+            "description": "Start a sprint (changes status to ACTIVE)."
+          },
+          "response": [
+            {
+              "name": "200 OK – Sprint Started",
+              "originalRequest": { "method": "PATCH", "header": [], "url": { "raw": "{{base_url}}/sprints/:sprintId/start", "host": ["{{base_url}}"], "path": ["sprints", ":sprintId", "start"], "variable": [{ "key": "sprintId", "value": "spr-uuid-0001" }] } },
+              "status": "OK", "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "cookie": [],
+              "body": "{\n  \"id\": \"spr-uuid-0001\",\n  \"projectId\": \"proj-uuid-0001\",\n  \"name\": \"Sprint 1\",\n  \"startDate\": \"2026-01-15\",\n  \"endDate\": \"2026-01-29\",\n  \"status\": \"ACTIVE\",\n  \"createdAt\": \"2026-01-10T09:00:00.000Z\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Complete Sprint",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/sprints/:sprintId/complete",
+              "host": ["{{base_url}}"],
+              "path": ["sprints", ":sprintId", "complete"],
+              "variable": [{ "key": "sprintId", "value": "sprint-uuid-here" }]
+            },
+            "description": "Complete a sprint (changes status to COMPLETED)."
+          },
+          "response": [
+            {
+              "name": "200 OK – Sprint Completed",
+              "originalRequest": { "method": "PATCH", "header": [], "url": { "raw": "{{base_url}}/sprints/:sprintId/complete", "host": ["{{base_url}}"], "path": ["sprints", ":sprintId", "complete"], "variable": [{ "key": "sprintId", "value": "spr-uuid-0001" }] } },
+              "status": "OK", "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "cookie": [],
+              "body": "{\n  \"id\": \"spr-uuid-0001\",\n  \"projectId\": \"proj-uuid-0001\",\n  \"name\": \"Sprint 1\",\n  \"startDate\": \"2026-01-15\",\n  \"endDate\": \"2026-01-29\",\n  \"status\": \"COMPLETED\",\n  \"createdAt\": \"2026-01-10T09:00:00.000Z\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Tasks",
+      "description": "Task management endpoints",
+      "item": [
+        {
+          "name": "Create Task",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"projectId\": \"project-uuid-here\",\n  \"taskType\": \"STORY\",\n  \"title\": \"Implement user login\",\n  \"description\": \"As a user, I want to login with my email and password so that I can access my account.\",\n  \"priority\": \"HIGH\",\n  \"storyPoints\": 5,\n  \"sprintId\": \"sprint-uuid-here\",\n  \"assigneeId\": \"user-uuid-here\"\n}" },
+            "url": { "raw": "{{base_url}}/tasks", "host": ["{{base_url}}"], "path": ["tasks"] },
+            "description": "Create a new task. The task_code will be auto-generated (e.g., MOB-1)."
+          },
+          "response": [
+            {
+              "name": "201 Created – Task",
+              "originalRequest": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"projectId\": \"proj-uuid-0001\",\n  \"taskType\": \"STORY\",\n  \"title\": \"Implement user login\",\n  \"priority\": \"HIGH\",\n  \"sprintId\": \"spr-uuid-0001\"\n}" }, "url": { "raw": "{{base_url}}/tasks", "host": ["{{base_url}}"], "path": ["tasks"] } },
+              "status": "Created", "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "cookie": [],
+              "body": "{\n  \"id\": \"task-uuid-0001\",\n  \"orgId\": \"org-uuid-1234\",\n  \"projectId\": \"proj-uuid-0001\",\n  \"sprintId\": \"spr-uuid-0001\",\n  \"taskCode\": \"MOB-1\",\n  \"title\": \"Implement user login\",\n  \"description\": \"As a user, I want to login with my email and password so that I can access my account.\",\n  \"taskType\": \"STORY\",\n  \"status\": \"TODO\",\n  \"priority\": \"HIGH\",\n  \"assignedTo\": \"b2c3d4e5-f6a7-8901-bcde-f12345678901\",\n  \"createdBy\": \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\",\n  \"dueDate\": null,\n  \"createdAt\": \"2026-01-15T10:00:00.000Z\"\n}"
+            },
+            {
+              "name": "400 Bad Request",
+              "originalRequest": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{}" }, "url": { "raw": "{{base_url}}/tasks", "host": ["{{base_url}}"], "path": ["tasks"] } },
+              "status": "Bad Request", "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "cookie": [],
+              "body": "{\n  \"statusCode\": 400,\n  \"message\": [\"projectId should not be empty\", \"title should not be empty\"],\n  \"error\": \"Bad Request\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get Tasks by Project",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/tasks?projectId=project-uuid-here&status=TODO&taskType=STORY&page=1&limit=20",
+              "host": ["{{base_url}}"],
+              "path": ["tasks"],
+              "query": [{ "key": "projectId", "value": "project-uuid-here" }, { "key": "status", "value": "TODO" }, { "key": "taskType", "value": "STORY" }, { "key": "page", "value": "1" }, { "key": "limit", "value": "20" }]
+            },
+            "description": "Get all tasks with optional filters."
+          },
+          "response": [
+            {
+              "name": "200 OK – Task List",
+              "originalRequest": { "method": "GET", "header": [], "url": { "raw": "{{base_url}}/tasks?projectId=proj-uuid-0001&status=TODO&page=1&limit=20", "host": ["{{base_url}}"], "path": ["tasks"] } },
+              "status": "OK", "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "cookie": [],
+              "body": "{\n  \"data\": [\n    {\n      \"id\": \"task-uuid-0001\",\n      \"orgId\": \"org-uuid-1234\",\n      \"projectId\": \"proj-uuid-0001\",\n      \"sprintId\": \"spr-uuid-0001\",\n      \"taskCode\": \"MOB-1\",\n      \"title\": \"Implement user login\",\n      \"taskType\": \"STORY\",\n      \"status\": \"TODO\",\n      \"priority\": \"HIGH\",\n      \"assignedTo\": \"b2c3d4e5-f6a7-8901-bcde-f12345678901\",\n      \"createdBy\": \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\",\n      \"dueDate\": null,\n      \"createdAt\": \"2026-01-15T10:00:00.000Z\"\n    }\n  ],\n  \"total\": 1,\n  \"page\": 1,\n  \"limit\": 20\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get Task by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/tasks/:taskId",
+              "host": ["{{base_url}}"],
+              "path": ["tasks", ":taskId"],
+              "variable": [{ "key": "taskId", "value": "task-uuid-here" }]
+            },
+            "description": "Get a specific task by ID with full details."
+          },
+          "response": [
+            {
+              "name": "200 OK – Task Detail",
+              "originalRequest": { "method": "GET", "header": [], "url": { "raw": "{{base_url}}/tasks/:taskId", "host": ["{{base_url}}"], "path": ["tasks", ":taskId"], "variable": [{ "key": "taskId", "value": "task-uuid-0001" }] } },
+              "status": "OK", "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "cookie": [],
+              "body": "{\n  \"id\": \"task-uuid-0001\",\n  \"orgId\": \"org-uuid-1234\",\n  \"projectId\": \"proj-uuid-0001\",\n  \"sprintId\": \"spr-uuid-0001\",\n  \"taskCode\": \"MOB-1\",\n  \"title\": \"Implement user login\",\n  \"description\": \"As a user, I want to login with my email and password.\",\n  \"taskType\": \"STORY\",\n  \"status\": \"IN_PROGRESS\",\n  \"priority\": \"HIGH\",\n  \"assignedTo\": \"b2c3d4e5-f6a7-8901-bcde-f12345678901\",\n  \"createdBy\": \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\",\n  \"dueDate\": \"2026-01-29\",\n  \"createdAt\": \"2026-01-15T10:00:00.000Z\",\n  \"assignee\": { \"id\": \"b2c3d4e5-f6a7-8901-bcde-f12345678901\", \"name\": \"Jane Smith\", \"email\": \"jane.smith@acme.com\" },\n  \"creator\": { \"id\": \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\", \"name\": \"John Doe\", \"email\": \"john.doe@acme.com\" },\n  \"sprint\": { \"id\": \"spr-uuid-0001\", \"name\": \"Sprint 1\", \"status\": \"ACTIVE\" },\n  \"tags\": [],\n  \"attachments\": [],\n  \"comments\": []\n}"
+            },
+            {
+              "name": "404 Not Found",
+              "originalRequest": { "method": "GET", "header": [], "url": { "raw": "{{base_url}}/tasks/:taskId", "host": ["{{base_url}}"], "path": ["tasks", ":taskId"], "variable": [{ "key": "taskId", "value": "unknown" }] } },
+              "status": "Not Found", "code": 404,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "cookie": [],
+              "body": "{\n  \"statusCode\": 404,\n  \"message\": \"Task not found\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get Task by Code",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/tasks/code/:taskCode",
+              "host": ["{{base_url}}"],
+              "path": ["tasks", "code", ":taskCode"],
+              "variable": [{ "key": "taskCode", "value": "MOB-1" }]
+            },
+            "description": "Get a task by its code (e.g., MOB-1)."
+          },
+          "response": [
+            {
+              "name": "200 OK – Task by Code",
+              "originalRequest": { "method": "GET", "header": [], "url": { "raw": "{{base_url}}/tasks/code/:taskCode", "host": ["{{base_url}}"], "path": ["tasks", "code", ":taskCode"], "variable": [{ "key": "taskCode", "value": "MOB-1" }] } },
+              "status": "OK", "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "cookie": [],
+              "body": "{\n  \"id\": \"task-uuid-0001\",\n  \"orgId\": \"org-uuid-1234\",\n  \"projectId\": \"proj-uuid-0001\",\n  \"sprintId\": \"spr-uuid-0001\",\n  \"taskCode\": \"MOB-1\",\n  \"title\": \"Implement user login\",\n  \"taskType\": \"STORY\",\n  \"status\": \"IN_PROGRESS\",\n  \"priority\": \"HIGH\",\n  \"assignedTo\": \"b2c3d4e5-f6a7-8901-bcde-f12345678901\",\n  \"createdBy\": \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\",\n  \"dueDate\": \"2026-01-29\",\n  \"createdAt\": \"2026-01-15T10:00:00.000Z\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Update Task",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"title\": \"Implement user login with OAuth\",\n  \"status\": \"IN_PROGRESS\",\n  \"storyPoints\": 8\n}" },
+            "url": {
+              "raw": "{{base_url}}/tasks/:taskId",
+              "host": ["{{base_url}}"],
+              "path": ["tasks", ":taskId"],
+              "variable": [{ "key": "taskId", "value": "task-uuid-here" }]
+            },
+            "description": "Update a task."
+          },
+          "response": [
+            {
+              "name": "200 OK – Updated Task",
+              "originalRequest": { "method": "PATCH", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"title\": \"Implement user login with OAuth\",\n  \"status\": \"IN_PROGRESS\"\n}" }, "url": { "raw": "{{base_url}}/tasks/:taskId", "host": ["{{base_url}}"], "path": ["tasks", ":taskId"], "variable": [{ "key": "taskId", "value": "task-uuid-0001" }] } },
+              "status": "OK", "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "cookie": [],
+              "body": "{\n  \"id\": \"task-uuid-0001\",\n  \"orgId\": \"org-uuid-1234\",\n  \"projectId\": \"proj-uuid-0001\",\n  \"sprintId\": \"spr-uuid-0001\",\n  \"taskCode\": \"MOB-1\",\n  \"title\": \"Implement user login with OAuth\",\n  \"taskType\": \"STORY\",\n  \"status\": \"IN_PROGRESS\",\n  \"priority\": \"HIGH\",\n  \"assignedTo\": \"b2c3d4e5-f6a7-8901-bcde-f12345678901\",\n  \"createdBy\": \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\",\n  \"dueDate\": \"2026-01-29\",\n  \"createdAt\": \"2026-01-15T10:00:00.000Z\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Update Task Status",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"status\": \"DONE\"\n}" },
+            "url": {
+              "raw": "{{base_url}}/tasks/:taskId/status",
+              "host": ["{{base_url}}"],
+              "path": ["tasks", ":taskId", "status"],
+              "variable": [{ "key": "taskId", "value": "task-uuid-here" }]
+            },
+            "description": "Update only the task status."
+          },
+          "response": [
+            {
+              "name": "200 OK – Status Updated",
+              "originalRequest": { "method": "PATCH", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"status\": \"DONE\"\n}" }, "url": { "raw": "{{base_url}}/tasks/:taskId/status", "host": ["{{base_url}}"], "path": ["tasks", ":taskId", "status"], "variable": [{ "key": "taskId", "value": "task-uuid-0001" }] } },
+              "status": "OK", "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "cookie": [],
+              "body": "{\n  \"id\": \"task-uuid-0001\",\n  \"taskCode\": \"MOB-1\",\n  \"title\": \"Implement user login with OAuth\",\n  \"status\": \"DONE\",\n  \"updatedAt\": \"2026-01-20T15:00:00.000Z\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Assign Task",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"assigneeId\": \"user-uuid-here\"\n}" },
+            "url": {
+              "raw": "{{base_url}}/tasks/:taskId/assign",
+              "host": ["{{base_url}}"],
+              "path": ["tasks", ":taskId", "assign"],
+              "variable": [{ "key": "taskId", "value": "task-uuid-here" }]
+            },
+            "description": "Assign a task to a user."
+          },
+          "response": [
+            {
+              "name": "200 OK – Task Assigned",
+              "originalRequest": { "method": "PATCH", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"assigneeId\": \"b2c3d4e5-f6a7-8901-bcde-f12345678901\"\n}" }, "url": { "raw": "{{base_url}}/tasks/:taskId/assign", "host": ["{{base_url}}"], "path": ["tasks", ":taskId", "assign"], "variable": [{ "key": "taskId", "value": "task-uuid-0001" }] } },
+              "status": "OK", "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "cookie": [],
+              "body": "{\n  \"id\": \"task-uuid-0001\",\n  \"taskCode\": \"MOB-1\",\n  \"title\": \"Implement user login with OAuth\",\n  \"assignedTo\": \"b2c3d4e5-f6a7-8901-bcde-f12345678901\",\n  \"assignee\": {\n    \"id\": \"b2c3d4e5-f6a7-8901-bcde-f12345678901\",\n    \"name\": \"Jane Smith\",\n    \"email\": \"jane.smith@acme.com\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Delete Task",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/tasks/:taskId",
+              "host": ["{{base_url}}"],
+              "path": ["tasks", ":taskId"],
+              "variable": [{ "key": "taskId", "value": "task-uuid-here" }]
+            },
+            "description": "Delete a task."
+          },
+          "response": [
+            {
+              "name": "200 OK – Task Deleted",
+              "originalRequest": { "method": "DELETE", "header": [], "url": { "raw": "{{base_url}}/tasks/:taskId", "host": ["{{base_url}}"], "path": ["tasks", ":taskId"], "variable": [{ "key": "taskId", "value": "task-uuid-0001" }] } },
+              "status": "OK", "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "cookie": [],
+              "body": "{\n  \"message\": \"Task deleted successfully\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Time Logs",
+      "description": "Time tracking endpoints",
+      "item": [
+        {
+          "name": "Log Time",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"taskId\": \"task-uuid-here\",\n  \"logDate\": \"2024-01-15\",\n  \"minutes\": 120,\n  \"description\": \"Implemented login form validation\"\n}" },
+            "url": { "raw": "{{base_url}}/time-logs", "host": ["{{base_url}}"], "path": ["time-logs"] },
+            "description": "Log time for a task. Maximum 720 minutes (12 hours) per day. No future dates allowed."
+          },
+          "response": [
+            {
+              "name": "201 Created – Time Log",
+              "originalRequest": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"taskId\": \"task-uuid-0001\",\n  \"logDate\": \"2026-01-15\",\n  \"minutes\": 120,\n  \"description\": \"Implemented login form validation\"\n}" }, "url": { "raw": "{{base_url}}/time-logs", "host": ["{{base_url}}"], "path": ["time-logs"] } },
+              "status": "Created", "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "cookie": [],
+              "body": "{\n  \"id\": \"tlog-uuid-0001\",\n  \"userId\": \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\",\n  \"orgId\": \"org-uuid-1234\",\n  \"projectId\": \"proj-uuid-0001\",\n  \"taskId\": \"task-uuid-0001\",\n  \"logDate\": \"2026-01-15\",\n  \"minutes\": 120,\n  \"description\": \"Implemented login form validation\",\n  \"createdAt\": \"2026-01-15T17:00:00.000Z\"\n}"
+            },
+            {
+              "name": "400 Bad Request – Daily Limit Exceeded",
+              "originalRequest": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"taskId\": \"task-uuid-0001\",\n  \"logDate\": \"2026-01-15\",\n  \"minutes\": 800\n}" }, "url": { "raw": "{{base_url}}/time-logs", "host": ["{{base_url}}"], "path": ["time-logs"] } },
+              "status": "Bad Request", "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "cookie": [],
+              "body": "{\n  \"statusCode\": 400,\n  \"message\": \"Total logged time for the day would exceed 720 minutes (12 hours)\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get Time Logs",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/time-logs?taskId=task-uuid-here&startDate=2024-01-01&endDate=2024-01-31",
+              "host": ["{{base_url}}"],
+              "path": ["time-logs"],
+              "query": [{ "key": "taskId", "value": "task-uuid-here" }, { "key": "startDate", "value": "2024-01-01" }, { "key": "endDate", "value": "2024-01-31" }]
+            },
+            "description": "Get time logs with optional filters."
+          },
+          "response": [
+            {
+              "name": "200 OK – Time Logs",
+              "originalRequest": { "method": "GET", "header": [], "url": { "raw": "{{base_url}}/time-logs?taskId=task-uuid-0001&startDate=2026-01-01&endDate=2026-01-31", "host": ["{{base_url}}"], "path": ["time-logs"] } },
+              "status": "OK", "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "cookie": [],
+              "body": "[\n  {\n    \"id\": \"tlog-uuid-0001\",\n    \"userId\": \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\",\n    \"orgId\": \"org-uuid-1234\",\n    \"projectId\": \"proj-uuid-0001\",\n    \"taskId\": \"task-uuid-0001\",\n    \"logDate\": \"2026-01-15\",\n    \"minutes\": 120,\n    \"description\": \"Implemented login form validation\",\n    \"createdAt\": \"2026-01-15T17:00:00.000Z\"\n  }\n]"
+            }
+          ]
+        },
+        {
+          "name": "Get My Time Logs",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/time-logs/my-logs?startDate=2026-03-01&endDate=2026-03-31",
+              "host": ["{{base_url}}"],
+              "path": ["time-logs", "my-logs"],
+              "query": [
+                { "key": "startDate", "value": "2026-03-01", "description": "Start date (YYYY-MM-DD)" },
+                { "key": "endDate", "value": "2026-03-31", "description": "End date (YYYY-MM-DD)" },
+                { "key": "projectId", "value": "", "description": "Filter by project ID (UUID) – optional", "disabled": true }
+              ]
+            },
+            "description": "Get the current user's time logs filtered by date range. Optionally filter by projectId."
+          },
+          "response": [
+            {
+              "name": "200 OK – My Time Logs",
+              "originalRequest": { "method": "GET", "header": [], "url": { "raw": "{{base_url}}/time-logs/my-logs?startDate=2026-03-01&endDate=2026-03-31", "host": ["{{base_url}}"], "path": ["time-logs", "my-logs"], "query": [{ "key": "startDate", "value": "2026-03-01" }, { "key": "endDate", "value": "2026-03-31" }] } },
+              "status": "OK", "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "cookie": [],
+              "body": "[\n  {\n    \"id\": \"tlog-uuid-0001\",\n    \"userId\": \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\",\n    \"orgId\": \"org-uuid-1234\",\n    \"projectId\": \"proj-uuid-0001\",\n    \"taskId\": \"task-uuid-0001\",\n    \"logDate\": \"2026-03-23\",\n    \"minutes\": 480,\n    \"description\": \"Implemented login form validation\",\n    \"createdAt\": \"2026-03-23T10:00:00.000Z\",\n    \"task\": { \"id\": \"task-uuid-0001\", \"taskCode\": \"MOB-1\", \"title\": \"Implement user login\" }\n  }\n]"
+            },
+            {
+              "name": "200 OK – My Time Logs (filtered by project)",
+              "originalRequest": { "method": "GET", "header": [], "url": { "raw": "{{base_url}}/time-logs/my-logs?startDate=2026-03-01&endDate=2026-03-31&projectId=proj-uuid-0001", "host": ["{{base_url}}"], "path": ["time-logs", "my-logs"], "query": [{ "key": "startDate", "value": "2026-03-01" }, { "key": "endDate", "value": "2026-03-31" }, { "key": "projectId", "value": "proj-uuid-0001" }] } },
+              "status": "OK", "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "cookie": [],
+              "body": "[\n  {\n    \"id\": \"tlog-uuid-0001\",\n    \"userId\": \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\",\n    \"orgId\": \"org-uuid-1234\",\n    \"projectId\": \"proj-uuid-0001\",\n    \"taskId\": \"task-uuid-0001\",\n    \"logDate\": \"2026-03-23\",\n    \"minutes\": 480,\n    \"description\": \"Implemented login form validation\",\n    \"createdAt\": \"2026-03-23T10:00:00.000Z\",\n    \"task\": { \"id\": \"task-uuid-0001\", \"taskCode\": \"MOB-1\", \"title\": \"Implement user login\" }\n  }\n]"
+            }
+          ]
+        },
+        {
+          "name": "Get Daily Summary",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/time-logs/daily-summary?date=2024-01-15",
+              "host": ["{{base_url}}"],
+              "path": ["time-logs", "daily-summary"],
+              "query": [{ "key": "date", "value": "2024-01-15" }]
+            },
+            "description": "Get the daily summary for a specific date. Color codes: RED (0 hrs), YELLOW (<8 hrs), GREEN (8 hrs), PURPLE (>8 hrs)."
+          },
+          "response": [
+            {
+              "name": "200 OK – Daily Summary",
+              "originalRequest": { "method": "GET", "header": [], "url": { "raw": "{{base_url}}/time-logs/daily-summary?date=2026-01-15", "host": ["{{base_url}}"], "path": ["time-logs", "daily-summary"], "query": [{ "key": "date", "value": "2026-01-15" }] } },
+              "status": "OK", "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "cookie": [],
+              "body": "{\n  \"id\": \"sum-uuid-0001\",\n  \"userId\": \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\",\n  \"orgId\": \"org-uuid-1234\",\n  \"summaryDate\": \"2026-01-15\",\n  \"totalMinutes\": 480,\n  \"colorCode\": \"GREEN\",\n  \"createdAt\": \"2026-01-15T17:00:00.000Z\",\n  \"logs\": [\n    {\n      \"id\": \"tlog-uuid-0001\",\n      \"taskId\": \"task-uuid-0001\",\n      \"minutes\": 480,\n      \"description\": \"Implemented login form validation\",\n      \"task\": { \"taskCode\": \"MOB-1\", \"title\": \"Implement user login\" }\n    }\n  ]\n}"
+            }
+          ]
+        },
+        {
+          "name": "Update Time Log",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"minutes\": 180,\n  \"description\": \"Updated: Implemented login form validation and error handling\"\n}" },
+            "url": {
+              "raw": "{{base_url}}/time-logs/:timeLogId",
+              "host": ["{{base_url}}"],
+              "path": ["time-logs", ":timeLogId"],
+              "variable": [{ "key": "timeLogId", "value": "time-log-uuid-here" }]
+            },
+            "description": "Update a time log entry."
+          },
+          "response": [
+            {
+              "name": "200 OK – Updated Time Log",
+              "originalRequest": { "method": "PATCH", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"minutes\": 180,\n  \"description\": \"Updated: Implemented login form validation and error handling\"\n}" }, "url": { "raw": "{{base_url}}/time-logs/:timeLogId", "host": ["{{base_url}}"], "path": ["time-logs", ":timeLogId"], "variable": [{ "key": "timeLogId", "value": "tlog-uuid-0001" }] } },
+              "status": "OK", "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "cookie": [],
+              "body": "{\n  \"id\": \"tlog-uuid-0001\",\n  \"userId\": \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\",\n  \"orgId\": \"org-uuid-1234\",\n  \"projectId\": \"proj-uuid-0001\",\n  \"taskId\": \"task-uuid-0001\",\n  \"logDate\": \"2026-01-15\",\n  \"minutes\": 180,\n  \"description\": \"Updated: Implemented login form validation and error handling\",\n  \"createdAt\": \"2026-01-15T17:00:00.000Z\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Delete Time Log",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/time-logs/:timeLogId",
+              "host": ["{{base_url}}"],
+              "path": ["time-logs", ":timeLogId"],
+              "variable": [{ "key": "timeLogId", "value": "time-log-uuid-here" }]
+            },
+            "description": "Delete a time log entry."
+          },
+          "response": [
+            {
+              "name": "200 OK – Time Log Deleted",
+              "originalRequest": { "method": "DELETE", "header": [], "url": { "raw": "{{base_url}}/time-logs/:timeLogId", "host": ["{{base_url}}"], "path": ["time-logs", ":timeLogId"], "variable": [{ "key": "timeLogId", "value": "tlog-uuid-0001" }] } },
+              "status": "OK", "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "cookie": [],
+              "body": "{\n  \"message\": \"Time log deleted successfully\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Comments",
+      "description": "Task comment endpoints",
+      "item": [
+        {
+          "name": "Add Comment to Task",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"taskId\": \"task-uuid-here\",\n  \"commentText\": \"This looks good. Please add unit tests before marking as done.\"\n}" },
+            "url": { "raw": "{{base_url}}/comments", "host": ["{{base_url}}"], "path": ["comments"] },
+            "description": "Add a comment to a task."
+          },
+          "response": [
+            {
+              "name": "201 Created – Comment",
+              "originalRequest": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"taskId\": \"task-uuid-0001\",\n  \"commentText\": \"This looks good. Please add unit tests before marking as done.\"\n}" }, "url": { "raw": "{{base_url}}/comments", "host": ["{{base_url}}"], "path": ["comments"] } },
+              "status": "Created", "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "cookie": [],
+              "body": "{\n  \"id\": \"cmt-uuid-0001\",\n  \"taskId\": \"task-uuid-0001\",\n  \"userId\": \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\",\n  \"comment\": \"This looks good. Please add unit tests before marking as done.\",\n  \"parentCommentId\": null,\n  \"createdAt\": \"2026-01-16T10:00:00.000Z\",\n  \"updatedAt\": \"2026-01-16T10:00:00.000Z\",\n  \"user\": { \"id\": \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\", \"name\": \"John Doe\", \"email\": \"john.doe@acme.com\" }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Reply to Comment",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"taskId\": \"task-uuid-here\",\n  \"commentText\": \"Sure, I will add unit tests today.\",\n  \"parentCommentId\": \"comment-uuid-here\"\n}" },
+            "url": { "raw": "{{base_url}}/comments", "host": ["{{base_url}}"], "path": ["comments"] },
+            "description": "Reply to an existing comment (threaded comments)."
+          },
+          "response": [
+            {
+              "name": "201 Created – Reply",
+              "originalRequest": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"taskId\": \"task-uuid-0001\",\n  \"commentText\": \"Sure, I will add unit tests today.\",\n  \"parentCommentId\": \"cmt-uuid-0001\"\n}" }, "url": { "raw": "{{base_url}}/comments", "host": ["{{base_url}}"], "path": ["comments"] } },
+              "status": "Created", "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "cookie": [],
+              "body": "{\n  \"id\": \"cmt-uuid-0002\",\n  \"taskId\": \"task-uuid-0001\",\n  \"userId\": \"b2c3d4e5-f6a7-8901-bcde-f12345678901\",\n  \"comment\": \"Sure, I will add unit tests today.\",\n  \"parentCommentId\": \"cmt-uuid-0001\",\n  \"createdAt\": \"2026-01-16T10:15:00.000Z\",\n  \"updatedAt\": \"2026-01-16T10:15:00.000Z\",\n  \"user\": { \"id\": \"b2c3d4e5-f6a7-8901-bcde-f12345678901\", \"name\": \"Jane Smith\", \"email\": \"jane.smith@acme.com\" }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get Task Comments",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/comments/task/:taskId",
+              "host": ["{{base_url}}"],
+              "path": ["comments", "task", ":taskId"],
+              "variable": [{ "key": "taskId", "value": "task-uuid-here" }]
+            },
+            "description": "Get all comments for a task with threaded replies."
+          },
+          "response": [
+            {
+              "name": "200 OK – Task Comments",
+              "originalRequest": { "method": "GET", "header": [], "url": { "raw": "{{base_url}}/comments/task/:taskId", "host": ["{{base_url}}"], "path": ["comments", "task", ":taskId"], "variable": [{ "key": "taskId", "value": "task-uuid-0001" }] } },
+              "status": "OK", "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "cookie": [],
+              "body": "[\n  {\n    \"id\": \"cmt-uuid-0001\",\n    \"taskId\": \"task-uuid-0001\",\n    \"userId\": \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\",\n    \"comment\": \"This looks good. Please add unit tests before marking as done.\",\n    \"parentCommentId\": null,\n    \"createdAt\": \"2026-01-16T10:00:00.000Z\",\n    \"updatedAt\": \"2026-01-16T10:00:00.000Z\",\n    \"user\": { \"id\": \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\", \"name\": \"John Doe\" },\n    \"replies\": [\n      {\n        \"id\": \"cmt-uuid-0002\",\n        \"taskId\": \"task-uuid-0001\",\n        \"userId\": \"b2c3d4e5-f6a7-8901-bcde-f12345678901\",\n        \"comment\": \"Sure, I will add unit tests today.\",\n        \"parentCommentId\": \"cmt-uuid-0001\",\n        \"createdAt\": \"2026-01-16T10:15:00.000Z\",\n        \"updatedAt\": \"2026-01-16T10:15:00.000Z\",\n        \"user\": { \"id\": \"b2c3d4e5-f6a7-8901-bcde-f12345678901\", \"name\": \"Jane Smith\" }\n      }\n    ]\n  }\n]"
+            }
+          ]
+        },
+        {
+          "name": "Update Comment",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"commentText\": \"Updated comment text\"\n}" },
+            "url": {
+              "raw": "{{base_url}}/comments/:commentId",
+              "host": ["{{base_url}}"],
+              "path": ["comments", ":commentId"],
+              "variable": [{ "key": "commentId", "value": "comment-uuid-here" }]
+            },
+            "description": "Update a comment (only owner can update)."
+          },
+          "response": [
+            {
+              "name": "200 OK – Updated Comment",
+              "originalRequest": { "method": "PATCH", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"commentText\": \"Updated comment text\"\n}" }, "url": { "raw": "{{base_url}}/comments/:commentId", "host": ["{{base_url}}"], "path": ["comments", ":commentId"], "variable": [{ "key": "commentId", "value": "cmt-uuid-0001" }] } },
+              "status": "OK", "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "cookie": [],
+              "body": "{\n  \"id\": \"cmt-uuid-0001\",\n  \"taskId\": \"task-uuid-0001\",\n  \"userId\": \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\",\n  \"comment\": \"Updated comment text\",\n  \"parentCommentId\": null,\n  \"createdAt\": \"2026-01-16T10:00:00.000Z\",\n  \"updatedAt\": \"2026-01-16T11:00:00.000Z\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Delete Comment",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/comments/:commentId",
+              "host": ["{{base_url}}"],
+              "path": ["comments", ":commentId"],
+              "variable": [{ "key": "commentId", "value": "comment-uuid-here" }]
+            },
+            "description": "Delete a comment (only owner or admin can delete)."
+          },
+          "response": [
+            {
+              "name": "200 OK – Comment Deleted",
+              "originalRequest": { "method": "DELETE", "header": [], "url": { "raw": "{{base_url}}/comments/:commentId", "host": ["{{base_url}}"], "path": ["comments", ":commentId"], "variable": [{ "key": "commentId", "value": "cmt-uuid-0001" }] } },
+              "status": "OK", "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "cookie": [],
+              "body": "{\n  \"message\": \"Comment deleted successfully\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Attachments",
+      "description": "File attachment endpoints",
+      "item": [
+        {
+          "name": "Upload Attachment (Direct)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": { "mode": "formdata", "formdata": [{ "key": "file", "type": "file", "src": "/path/to/your/file.pdf" }, { "key": "taskId", "value": "task-uuid-here", "type": "text" }] },
+            "url": { "raw": "{{base_url}}/attachments/upload", "host": ["{{base_url}}"], "path": ["attachments", "upload"] },
+            "description": "Upload a file attachment directly to the server (which uploads to S3)."
+          },
+          "response": [
+            {
+              "name": "201 Created – Attachment",
+              "originalRequest": { "method": "POST", "header": [], "body": { "mode": "formdata", "formdata": [{ "key": "file", "type": "file", "src": "/path/to/file.pdf" }, { "key": "taskId", "value": "task-uuid-0001", "type": "text" }] }, "url": { "raw": "{{base_url}}/attachments/upload", "host": ["{{base_url}}"], "path": ["attachments", "upload"] } },
+              "status": "Created", "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "cookie": [],
+              "body": "{\n  \"id\": \"att-uuid-0001\",\n  \"taskId\": \"task-uuid-0001\",\n  \"fileName\": \"design-mockup.pdf\",\n  \"fileUrl\": \"https://onelign-product-assets.s3.us-east-2.amazonaws.com/attachments/att-uuid-0001/design-mockup.pdf\",\n  \"uploadedBy\": \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\",\n  \"uploadedAt\": \"2026-01-16T12:00:00.000Z\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get Pre-signed Upload URL",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"taskId\": \"task-uuid-here\",\n  \"fileName\": \"design-mockup.pdf\",\n  \"contentType\": \"application/pdf\",\n  \"fileSize\": 1048576\n}" },
+            "url": { "raw": "{{base_url}}/attachments/presign", "host": ["{{base_url}}"], "path": ["attachments", "presign"] },
+            "description": "Get a pre-signed URL to upload directly to S3 from the client."
+          },
+          "response": [
+            {
+              "name": "201 Created – Pre-signed URL",
+              "originalRequest": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"taskId\": \"task-uuid-0001\",\n  \"fileName\": \"design-mockup.pdf\",\n  \"contentType\": \"application/pdf\",\n  \"fileSize\": 1048576\n}" }, "url": { "raw": "{{base_url}}/attachments/presign", "host": ["{{base_url}}"], "path": ["attachments", "presign"] } },
+              "status": "Created", "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "cookie": [],
+              "body": "{\n  \"uploadUrl\": \"https://onelign-product-assets.s3.us-east-2.amazonaws.com/attachments/att-uuid-0001/design-mockup.pdf?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=...&X-Amz-Signature=...\",\n  \"attachmentId\": \"att-uuid-0001\",\n  \"expiresIn\": 3600\n}"
+            }
+          ]
+        },
+        {
+          "name": "Confirm Upload",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"attachmentId\": \"attachment-uuid-here\"\n}" },
+            "url": { "raw": "{{base_url}}/attachments/confirm", "host": ["{{base_url}}"], "path": ["attachments", "confirm"] },
+            "description": "Confirm that a pre-signed upload was completed successfully."
+          },
+          "response": [
+            {
+              "name": "200 OK – Upload Confirmed",
+              "originalRequest": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"attachmentId\": \"att-uuid-0001\"\n}" }, "url": { "raw": "{{base_url}}/attachments/confirm", "host": ["{{base_url}}"], "path": ["attachments", "confirm"] } },
+              "status": "OK", "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "cookie": [],
+              "body": "{\n  \"id\": \"att-uuid-0001\",\n  \"taskId\": \"task-uuid-0001\",\n  \"fileName\": \"design-mockup.pdf\",\n  \"fileUrl\": \"https://onelign-product-assets.s3.us-east-2.amazonaws.com/attachments/att-uuid-0001/design-mockup.pdf\",\n  \"uploadedBy\": \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\",\n  \"uploadedAt\": \"2026-01-16T12:00:00.000Z\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get Task Attachments",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/attachments/task/:taskId",
+              "host": ["{{base_url}}"],
+              "path": ["attachments", "task", ":taskId"],
+              "variable": [{ "key": "taskId", "value": "task-uuid-here" }]
+            },
+            "description": "Get all attachments for a task."
+          },
+          "response": [
+            {
+              "name": "200 OK – Task Attachments",
+              "originalRequest": { "method": "GET", "header": [], "url": { "raw": "{{base_url}}/attachments/task/:taskId", "host": ["{{base_url}}"], "path": ["attachments", "task", ":taskId"], "variable": [{ "key": "taskId", "value": "task-uuid-0001" }] } },
+              "status": "OK", "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "cookie": [],
+              "body": "[\n  {\n    \"id\": \"att-uuid-0001\",\n    \"taskId\": \"task-uuid-0001\",\n    \"fileName\": \"design-mockup.pdf\",\n    \"fileUrl\": \"https://onelign-product-assets.s3.us-east-2.amazonaws.com/attachments/att-uuid-0001/design-mockup.pdf\",\n    \"uploadedBy\": \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\",\n    \"uploadedAt\": \"2026-01-16T12:00:00.000Z\",\n    \"uploadedByUser\": { \"id\": \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\", \"name\": \"John Doe\" }\n  }\n]"
+            }
+          ]
+        },
+        {
+          "name": "Get Download URL",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/attachments/:attachmentId/download",
+              "host": ["{{base_url}}"],
+              "path": ["attachments", ":attachmentId", "download"],
+              "variable": [{ "key": "attachmentId", "value": "attachment-uuid-here" }]
+            },
+            "description": "Get a pre-signed download URL for an attachment."
+          },
+          "response": [
+            {
+              "name": "200 OK – Download URL",
+              "originalRequest": { "method": "GET", "header": [], "url": { "raw": "{{base_url}}/attachments/:attachmentId/download", "host": ["{{base_url}}"], "path": ["attachments", ":attachmentId", "download"], "variable": [{ "key": "attachmentId", "value": "att-uuid-0001" }] } },
+              "status": "OK", "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "cookie": [],
+              "body": "{\n  \"downloadUrl\": \"https://onelign-product-assets.s3.us-east-2.amazonaws.com/attachments/att-uuid-0001/design-mockup.pdf?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=...&X-Amz-Signature=...\",\n  \"fileName\": \"design-mockup.pdf\",\n  \"expiresIn\": 3600\n}"
+            }
+          ]
+        },
+        {
+          "name": "Delete Attachment",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/attachments/:attachmentId",
+              "host": ["{{base_url}}"],
+              "path": ["attachments", ":attachmentId"],
+              "variable": [{ "key": "attachmentId", "value": "attachment-uuid-here" }]
+            },
+            "description": "Delete an attachment (removes from S3 as well)."
+          },
+          "response": [
+            {
+              "name": "200 OK – Attachment Deleted",
+              "originalRequest": { "method": "DELETE", "header": [], "url": { "raw": "{{base_url}}/attachments/:attachmentId", "host": ["{{base_url}}"], "path": ["attachments", ":attachmentId"], "variable": [{ "key": "attachmentId", "value": "att-uuid-0001" }] } },
+              "status": "OK", "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "cookie": [],
+              "body": "{\n  \"message\": \"Attachment deleted successfully\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Task Links",
+      "description": "Task relationship endpoints",
+      "item": [
+        {
+          "name": "Create Task Link",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"sourceTaskId\": \"task-uuid-1\",\n  \"targetTaskId\": \"task-uuid-2\",\n  \"linkType\": \"BLOCKS\"\n}" },
+            "url": { "raw": "{{base_url}}/task-links", "host": ["{{base_url}}"], "path": ["task-links"] },
+            "description": "Create a link between two tasks. Link types: BLOCKS, IS_BLOCKED_BY, DUPLICATES, IS_DUPLICATED_BY, RELATES_TO, PARENT_OF, CHILD_OF."
+          },
+          "response": [
+            {
+              "name": "201 Created – Task Link",
+              "originalRequest": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"sourceTaskId\": \"task-uuid-0001\",\n  \"targetTaskId\": \"task-uuid-0002\",\n  \"linkType\": \"BLOCKS\"\n}" }, "url": { "raw": "{{base_url}}/task-links", "host": ["{{base_url}}"], "path": ["task-links"] } },
+              "status": "Created", "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "cookie": [],
+              "body": "{\n  \"id\": \"lnk-uuid-0001\",\n  \"orgId\": \"org-uuid-1234\",\n  \"sourceTaskId\": \"task-uuid-0001\",\n  \"targetTaskId\": \"task-uuid-0002\",\n  \"linkType\": \"BLOCKS\",\n  \"createdBy\": \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\",\n  \"createdAt\": \"2026-01-17T09:00:00.000Z\"\n}"
+            },
+            {
+              "name": "409 Conflict – Link Exists",
+              "originalRequest": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"sourceTaskId\": \"task-uuid-0001\",\n  \"targetTaskId\": \"task-uuid-0002\",\n  \"linkType\": \"BLOCKS\"\n}" }, "url": { "raw": "{{base_url}}/task-links", "host": ["{{base_url}}"], "path": ["task-links"] } },
+              "status": "Conflict", "code": 409,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "cookie": [],
+              "body": "{\n  \"statusCode\": 409,\n  \"message\": \"Task link already exists\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get Task Links",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/task-links/task/:taskId",
+              "host": ["{{base_url}}"],
+              "path": ["task-links", "task", ":taskId"],
+              "variable": [{ "key": "taskId", "value": "task-uuid-here" }]
+            },
+            "description": "Get all links for a specific task."
+          },
+          "response": [
+            {
+              "name": "200 OK – Task Links",
+              "originalRequest": { "method": "GET", "header": [], "url": { "raw": "{{base_url}}/task-links/task/:taskId", "host": ["{{base_url}}"], "path": ["task-links", "task", ":taskId"], "variable": [{ "key": "taskId", "value": "task-uuid-0001" }] } },
+              "status": "OK", "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "cookie": [],
+              "body": "[\n  {\n    \"id\": \"lnk-uuid-0001\",\n    \"orgId\": \"org-uuid-1234\",\n    \"sourceTaskId\": \"task-uuid-0001\",\n    \"targetTaskId\": \"task-uuid-0002\",\n    \"linkType\": \"BLOCKS\",\n    \"createdBy\": \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\",\n    \"createdAt\": \"2026-01-17T09:00:00.000Z\",\n    \"targetTask\": { \"id\": \"task-uuid-0002\", \"taskCode\": \"MOB-2\", \"title\": \"Implement OAuth flow\" }\n  }\n]"
+            }
+          ]
+        },
+        {
+          "name": "Get Blocking Tasks",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/task-links/task/:taskId/blocking",
+              "host": ["{{base_url}}"],
+              "path": ["task-links", "task", ":taskId", "blocking"],
+              "variable": [{ "key": "taskId", "value": "task-uuid-here" }]
+            },
+            "description": "Get all tasks that are blocking this task."
+          },
+          "response": [
+            {
+              "name": "200 OK – Blocking Tasks",
+              "originalRequest": { "method": "GET", "header": [], "url": { "raw": "{{base_url}}/task-links/task/:taskId/blocking", "host": ["{{base_url}}"], "path": ["task-links", "task", ":taskId", "blocking"], "variable": [{ "key": "taskId", "value": "task-uuid-0002" }] } },
+              "status": "OK", "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "cookie": [],
+              "body": "[\n  {\n    \"id\": \"task-uuid-0001\",\n    \"taskCode\": \"MOB-1\",\n    \"title\": \"Implement user login\",\n    \"status\": \"IN_PROGRESS\",\n    \"priority\": \"HIGH\",\n    \"assignedTo\": \"b2c3d4e5-f6a7-8901-bcde-f12345678901\"\n  }\n]"
+            }
+          ]
+        },
+        {
+          "name": "Get Dependent Tasks",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/task-links/task/:taskId/dependent",
+              "host": ["{{base_url}}"],
+              "path": ["task-links", "task", ":taskId", "dependent"],
+              "variable": [{ "key": "taskId", "value": "task-uuid-here" }]
+            },
+            "description": "Get all tasks that depend on this task."
+          },
+          "response": [
+            {
+              "name": "200 OK – Dependent Tasks",
+              "originalRequest": { "method": "GET", "header": [], "url": { "raw": "{{base_url}}/task-links/task/:taskId/dependent", "host": ["{{base_url}}"], "path": ["task-links", "task", ":taskId", "dependent"], "variable": [{ "key": "taskId", "value": "task-uuid-0001" }] } },
+              "status": "OK", "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "cookie": [],
+              "body": "[\n  {\n    \"id\": \"task-uuid-0002\",\n    \"taskCode\": \"MOB-2\",\n    \"title\": \"Implement OAuth flow\",\n    \"status\": \"TODO\",\n    \"priority\": \"HIGH\",\n    \"assignedTo\": \"b2c3d4e5-f6a7-8901-bcde-f12345678901\"\n  }\n]"
+            }
+          ]
+        },
+        {
+          "name": "Delete Task Link",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/task-links/:linkId",
+              "host": ["{{base_url}}"],
+              "path": ["task-links", ":linkId"],
+              "variable": [{ "key": "linkId", "value": "link-uuid-here" }]
+            },
+            "description": "Delete a task link."
+          },
+          "response": [
+            {
+              "name": "200 OK – Link Deleted",
+              "originalRequest": { "method": "DELETE", "header": [], "url": { "raw": "{{base_url}}/task-links/:linkId", "host": ["{{base_url}}"], "path": ["task-links", ":linkId"], "variable": [{ "key": "linkId", "value": "lnk-uuid-0001" }] } },
+              "status": "OK", "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "cookie": [],
+              "body": "{\n  \"message\": \"Task link deleted successfully\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Tags",
+      "description": "Tag management endpoints",
+      "item": [
+        {
+          "name": "Create Tag",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"tagName\": \"Frontend\",\n  \"color\": \"#FF5733\"\n}" },
+            "url": { "raw": "{{base_url}}/tags", "host": ["{{base_url}}"], "path": ["tags"] },
+            "description": "Create a new tag. Requires Admin or Manager role."
+          },
+          "response": [
+            {
+              "name": "201 Created – Tag",
+              "originalRequest": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"tagName\": \"Frontend\",\n  \"color\": \"#FF5733\"\n}" }, "url": { "raw": "{{base_url}}/tags", "host": ["{{base_url}}"], "path": ["tags"] } },
+              "status": "Created", "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "cookie": [],
+              "body": "{\n  \"id\": \"tag-uuid-0001\",\n  \"orgId\": \"org-uuid-1234\",\n  \"name\": \"Frontend\",\n  \"color\": \"#FF5733\",\n  \"status\": \"ACTIVE\",\n  \"createdAt\": \"2026-01-10T08:00:00.000Z\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get All Tags",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/tags?status=ACTIVE",
+              "host": ["{{base_url}}"],
+              "path": ["tags"],
+              "query": [{ "key": "status", "value": "ACTIVE" }]
+            },
+            "description": "Get all tags in the organization."
+          },
+          "response": [
+            {
+              "name": "200 OK – Tag List",
+              "originalRequest": { "method": "GET", "header": [], "url": { "raw": "{{base_url}}/tags?status=ACTIVE", "host": ["{{base_url}}"], "path": ["tags"] } },
+              "status": "OK", "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "cookie": [],
+              "body": "[\n  {\n    \"id\": \"tag-uuid-0001\",\n    \"orgId\": \"org-uuid-1234\",\n    \"name\": \"Frontend\",\n    \"color\": \"#FF5733\",\n    \"status\": \"ACTIVE\",\n    \"createdAt\": \"2026-01-10T08:00:00.000Z\"\n  },\n  {\n    \"id\": \"tag-uuid-0002\",\n    \"orgId\": \"org-uuid-1234\",\n    \"name\": \"Backend\",\n    \"color\": \"#3498DB\",\n    \"status\": \"ACTIVE\",\n    \"createdAt\": \"2026-01-10T08:05:00.000Z\"\n  }\n]"
+            }
+          ]
+        },
+        {
+          "name": "Get Tag by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/tags/:tagId",
+              "host": ["{{base_url}}"],
+              "path": ["tags", ":tagId"],
+              "variable": [{ "key": "tagId", "value": "tag-uuid-here" }]
+            },
+            "description": "Get a specific tag by ID."
+          },
+          "response": [
+            {
+              "name": "200 OK – Tag Detail",
+              "originalRequest": { "method": "GET", "header": [], "url": { "raw": "{{base_url}}/tags/:tagId", "host": ["{{base_url}}"], "path": ["tags", ":tagId"], "variable": [{ "key": "tagId", "value": "tag-uuid-0001" }] } },
+              "status": "OK", "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "cookie": [],
+              "body": "{\n  \"id\": \"tag-uuid-0001\",\n  \"orgId\": \"org-uuid-1234\",\n  \"name\": \"Frontend\",\n  \"color\": \"#FF5733\",\n  \"status\": \"ACTIVE\",\n  \"createdAt\": \"2026-01-10T08:00:00.000Z\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Update Tag",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"tagName\": \"Frontend Dev\",\n  \"color\": \"#3498DB\"\n}" },
+            "url": {
+              "raw": "{{base_url}}/tags/:tagId",
+              "host": ["{{base_url}}"],
+              "path": ["tags", ":tagId"],
+              "variable": [{ "key": "tagId", "value": "tag-uuid-here" }]
+            },
+            "description": "Update a tag. Requires Admin or Manager role."
+          },
+          "response": [
+            {
+              "name": "200 OK – Updated Tag",
+              "originalRequest": { "method": "PATCH", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"tagName\": \"Frontend Dev\",\n  \"color\": \"#3498DB\"\n}" }, "url": { "raw": "{{base_url}}/tags/:tagId", "host": ["{{base_url}}"], "path": ["tags", ":tagId"], "variable": [{ "key": "tagId", "value": "tag-uuid-0001" }] } },
+              "status": "OK", "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "cookie": [],
+              "body": "{\n  \"id\": \"tag-uuid-0001\",\n  \"orgId\": \"org-uuid-1234\",\n  \"name\": \"Frontend Dev\",\n  \"color\": \"#3498DB\",\n  \"status\": \"ACTIVE\",\n  \"createdAt\": \"2026-01-10T08:00:00.000Z\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Archive Tag",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"status\": \"ARCHIVED\"\n}" },
+            "url": {
+              "raw": "{{base_url}}/tags/:tagId/status",
+              "host": ["{{base_url}}"],
+              "path": ["tags", ":tagId", "status"],
+              "variable": [{ "key": "tagId", "value": "tag-uuid-here" }]
+            },
+            "description": "Archive or activate a tag."
+          },
+          "response": [
+            {
+              "name": "200 OK – Tag Archived",
+              "originalRequest": { "method": "PATCH", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"status\": \"ARCHIVED\"\n}" }, "url": { "raw": "{{base_url}}/tags/:tagId/status", "host": ["{{base_url}}"], "path": ["tags", ":tagId", "status"], "variable": [{ "key": "tagId", "value": "tag-uuid-0001" }] } },
+              "status": "OK", "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "cookie": [],
+              "body": "{\n  \"id\": \"tag-uuid-0001\",\n  \"orgId\": \"org-uuid-1234\",\n  \"name\": \"Frontend Dev\",\n  \"color\": \"#3498DB\",\n  \"status\": \"ARCHIVED\",\n  \"createdAt\": \"2026-01-10T08:00:00.000Z\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get Tasks with Tag",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/tags/:tagId/tasks",
+              "host": ["{{base_url}}"],
+              "path": ["tags", ":tagId", "tasks"],
+              "variable": [{ "key": "tagId", "value": "tag-uuid-here" }]
+            },
+            "description": "Get all tasks that have this tag."
+          },
+          "response": [
+            {
+              "name": "200 OK – Tasks with Tag",
+              "originalRequest": { "method": "GET", "header": [], "url": { "raw": "{{base_url}}/tags/:tagId/tasks", "host": ["{{base_url}}"], "path": ["tags", ":tagId", "tasks"], "variable": [{ "key": "tagId", "value": "tag-uuid-0001" }] } },
+              "status": "OK", "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "cookie": [],
+              "body": "[\n  {\n    \"id\": \"task-uuid-0001\",\n    \"taskCode\": \"MOB-1\",\n    \"title\": \"Implement user login\",\n    \"status\": \"IN_PROGRESS\",\n    \"priority\": \"HIGH\",\n    \"projectId\": \"proj-uuid-0001\"\n  }\n]"
+            }
+          ]
+        },
+        {
+          "name": "Delete Tag",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/tags/:tagId",
+              "host": ["{{base_url}}"],
+              "path": ["tags", ":tagId"],
+              "variable": [{ "key": "tagId", "value": "tag-uuid-here" }]
+            },
+            "description": "Delete a tag. Will fail if the tag is used by any tasks. Requires Admin role."
+          },
+          "response": [
+            {
+              "name": "200 OK – Tag Deleted",
+              "originalRequest": { "method": "DELETE", "header": [], "url": { "raw": "{{base_url}}/tags/:tagId", "host": ["{{base_url}}"], "path": ["tags", ":tagId"], "variable": [{ "key": "tagId", "value": "tag-uuid-0001" }] } },
+              "status": "OK", "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "cookie": [],
+              "body": "{\n  \"message\": \"Tag deleted successfully\"\n}"
+            },
+            {
+              "name": "409 Conflict – Tag In Use",
+              "originalRequest": { "method": "DELETE", "header": [], "url": { "raw": "{{base_url}}/tags/:tagId", "host": ["{{base_url}}"], "path": ["tags", ":tagId"], "variable": [{ "key": "tagId", "value": "tag-uuid-0001" }] } },
+              "status": "Conflict", "code": 409,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "cookie": [],
+              "body": "{\n  \"statusCode\": 409,\n  \"message\": \"Cannot delete tag that is used by tasks\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Organization",
+      "description": "Organization management endpoints — all require ADMIN role",
+      "item": [
+        {
+          "name": "ADMIN Dashboard — All Orgs",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/organizations/dashboard",
+              "host": ["{{base_url}}"],
+              "path": ["organizations", "dashboard"]
+            },
+            "description": "Returns tile-ready statistics across ALL organizations. Requires ADMIN role."
+          },
+          "response": [
+            {
+              "name": "200 OK – Platform Dashboard",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": { "raw": "{{base_url}}/organizations/dashboard", "host": ["{{base_url}}"], "path": ["organizations", "dashboard"] }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "cookie": [],
+              "body": "{\n  \"generatedAt\": \"2026-03-19T10:00:00.000Z\",\n  \"filter\": { \"orgId\": null },\n  \"summary\": {\n    \"totalOrganizations\": 3,\n    \"activeOrganizations\": 2,\n    \"totalUsers\": 87,\n    \"activeUsers\": 75,\n    \"totalProjects\": 11,\n    \"activeProjects\": 8,\n    \"totalSprints\": 34,\n    \"activeSprints\": 5,\n    \"totalTasks\": 312,\n    \"openTasks\": 98,\n    \"inProgressTasks\": 45,\n    \"completedTasks\": 169\n  },\n  \"organizations\": [\n    {\n      \"id\": \"org-uuid-1234\",\n      \"name\": \"Acme Corporation\",\n      \"status\": \"ACTIVE\",\n      \"createdAt\": \"2026-01-01T08:00:00.000Z\",\n      \"users\": { \"total\": 45, \"active\": 40, \"inactive\": 5 },\n      \"projects\": { \"total\": 6, \"active\": 5 },\n      \"sprints\": { \"total\": 20, \"planned\": 3, \"active\": 3, \"completed\": 14 },\n      \"tasks\": { \"total\": 180, \"todo\": 55, \"inProgress\": 30, \"done\": 95, \"cancelled\": 0 },\n      \"projectBreakdown\": [\n        {\n          \"id\": \"proj-uuid-0001\",\n          \"name\": \"Mobile App\",\n          \"status\": \"ACTIVE\",\n          \"teamSize\": 8,\n          \"sprints\": { \"total\": 5, \"planned\": 1, \"active\": 1, \"completed\": 3 },\n          \"tasks\": { \"total\": 60, \"todo\": 20, \"inProgress\": 10, \"done\": 30, \"cancelled\": 0 }\n        },\n        {\n          \"id\": \"proj-uuid-0002\",\n          \"name\": \"Backend API\",\n          \"status\": \"ACTIVE\",\n          \"teamSize\": 5,\n          \"sprints\": { \"total\": 4, \"planned\": 0, \"active\": 1, \"completed\": 3 },\n          \"tasks\": { \"total\": 45, \"todo\": 10, \"inProgress\": 8, \"done\": 27, \"cancelled\": 0 }\n        }\n      ]\n    },\n    {\n      \"id\": \"org-uuid-5678\",\n      \"name\": \"Beta Corp\",\n      \"status\": \"ACTIVE\",\n      \"createdAt\": \"2026-02-01T08:00:00.000Z\",\n      \"users\": { \"total\": 30, \"active\": 28, \"inactive\": 2 },\n      \"projects\": { \"total\": 4, \"active\": 3 },\n      \"sprints\": { \"total\": 12, \"planned\": 2, \"active\": 2, \"completed\": 8 },\n      \"tasks\": { \"total\": 110, \"todo\": 38, \"inProgress\": 12, \"done\": 60, \"cancelled\": 0 },\n      \"projectBreakdown\": [\n        {\n          \"id\": \"proj-uuid-0003\",\n          \"name\": \"Dashboard UI\",\n          \"status\": \"ACTIVE\",\n          \"teamSize\": 6,\n          \"sprints\": { \"total\": 4, \"planned\": 1, \"active\": 1, \"completed\": 2 },\n          \"tasks\": { \"total\": 50, \"todo\": 18, \"inProgress\": 7, \"done\": 25, \"cancelled\": 0 }\n        }\n      ]\n    }\n  ]\n}"
+            },
+            {
+              "name": "403 Forbidden",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": { "raw": "{{base_url}}/organizations/dashboard", "host": ["{{base_url}}"], "path": ["organizations", "dashboard"] }
+              },
+              "status": "Forbidden",
+              "code": 403,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "cookie": [],
+              "body": "{\n  \"statusCode\": 403,\n  \"message\": \"Forbidden resource\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "ADMIN Dashboard — Single Org",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/organizations/dashboard?orgId=org-uuid-here",
+              "host": ["{{base_url}}"],
+              "path": ["organizations", "dashboard"],
+              "query": [{ "key": "orgId", "value": "org-uuid-here", "description": "Organization UUID to scope the dashboard to" }]
+            },
+            "description": "Returns tile-ready statistics for a SINGLE organization. Pass orgId as a query param. Requires ADMIN role."
+          },
+          "response": [
+            {
+              "name": "200 OK – Single Org Dashboard",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": { "raw": "{{base_url}}/organizations/dashboard?orgId=org-uuid-1234", "host": ["{{base_url}}"], "path": ["organizations", "dashboard"], "query": [{ "key": "orgId", "value": "org-uuid-1234" }] }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "cookie": [],
+              "body": "{\n  \"generatedAt\": \"2026-03-19T10:00:00.000Z\",\n  \"filter\": { \"orgId\": \"org-uuid-1234\" },\n  \"summary\": {\n    \"totalOrganizations\": 1,\n    \"activeOrganizations\": 1,\n    \"totalUsers\": 45,\n    \"activeUsers\": 40,\n    \"totalProjects\": 6,\n    \"activeProjects\": 5,\n    \"totalSprints\": 20,\n    \"activeSprints\": 3,\n    \"totalTasks\": 180,\n    \"openTasks\": 55,\n    \"inProgressTasks\": 30,\n    \"completedTasks\": 95\n  },\n  \"organizations\": [\n    {\n      \"id\": \"org-uuid-1234\",\n      \"name\": \"Acme Corporation\",\n      \"status\": \"ACTIVE\",\n      \"createdAt\": \"2026-01-01T08:00:00.000Z\",\n      \"users\": { \"total\": 45, \"active\": 40, \"inactive\": 5 },\n      \"projects\": { \"total\": 6, \"active\": 5 },\n      \"sprints\": { \"total\": 20, \"planned\": 3, \"active\": 3, \"completed\": 14 },\n      \"tasks\": { \"total\": 180, \"todo\": 55, \"inProgress\": 30, \"done\": 95, \"cancelled\": 0 },\n      \"projectBreakdown\": [\n        {\n          \"id\": \"proj-uuid-0001\",\n          \"name\": \"Mobile App\",\n          \"status\": \"ACTIVE\",\n          \"teamSize\": 8,\n          \"sprints\": { \"total\": 5, \"planned\": 1, \"active\": 1, \"completed\": 3 },\n          \"tasks\": { \"total\": 60, \"todo\": 20, \"inProgress\": 10, \"done\": 30, \"cancelled\": 0 }\n        },\n        {\n          \"id\": \"proj-uuid-0002\",\n          \"name\": \"Backend API\",\n          \"status\": \"ACTIVE\",\n          \"teamSize\": 5,\n          \"sprints\": { \"total\": 4, \"planned\": 0, \"active\": 1, \"completed\": 3 },\n          \"tasks\": { \"total\": 45, \"todo\": 10, \"inProgress\": 8, \"done\": 27, \"cancelled\": 0 }\n        },\n        {\n          \"id\": \"proj-uuid-0006\",\n          \"name\": \"DevOps Pipeline\",\n          \"status\": \"PAUSED\",\n          \"teamSize\": 3,\n          \"sprints\": { \"total\": 2, \"planned\": 0, \"active\": 0, \"completed\": 2 },\n          \"tasks\": { \"total\": 20, \"todo\": 5, \"inProgress\": 0, \"done\": 15, \"cancelled\": 0 }\n        }\n      ]\n    }\n  ]\n}"
+            }
+          ]
+        },
+        {
+          "name": "Platform Stats (legacy)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/organizations/stats",
+              "host": ["{{base_url}}"],
+              "path": ["organizations", "stats"]
+            },
+            "description": "Legacy platform-wide stats endpoint. Prefer /organizations/dashboard for dashboard tiles."
+          },
+          "response": [
+            {
+              "name": "200 OK – Platform Stats",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": { "raw": "{{base_url}}/organizations/stats", "host": ["{{base_url}}"], "path": ["organizations", "stats"] }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "cookie": [],
+              "body": "{\n  \"totalOrganizations\": 3,\n  \"totalUsers\": 87,\n  \"totalProjects\": 11,\n  \"totalTasks\": 312,\n  \"organizations\": [\n    {\n      \"id\": \"org-uuid-1234\",\n      \"name\": \"Acme Corporation\",\n      \"status\": \"ACTIVE\",\n      \"userCount\": 45,\n      \"projectCount\": 6,\n      \"projects\": [\n        { \"id\": \"proj-uuid-0001\", \"name\": \"Mobile App\", \"taskCount\": 60 },\n        { \"id\": \"proj-uuid-0002\", \"name\": \"Backend API\", \"taskCount\": 45 }\n      ]\n    }\n  ]\n}"
+            }
+          ]
+        },
+        {
+          "name": "Create Organization",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Acme Corporation\",\n  \"azureTenantId\": \"7915d0a8-0a13-4824-ba52-43a1ad694c42\",\n  \"orgAdminEmail\": \"jane.admin@acme.com\"\n}" },
+            "url": { "raw": "{{base_url}}/organizations", "host": ["{{base_url}}"], "path": ["organizations"] },
+            "description": "Create a new organization and pre-provision its ORG_ADMIN in one atomic transaction.\n\n- `orgAdminEmail` is **required** — the ORG_ADMIN stub is created immediately.\n- When that person first signs in via Microsoft, their account is claimed automatically and they get full ORG_ADMIN access.\n- `azureTenantId` is optional but needed for Microsoft SSO login to work.\n\nRequires ADMIN role."
+          },
+          "response": [
+            {
+              "name": "201 Created – Organization + ORG_ADMIN",
+              "originalRequest": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"name\": \"Acme Corporation\",\n  \"azureTenantId\": \"7915d0a8-0a13-4824-ba52-43a1ad694c42\",\n  \"orgAdminEmail\": \"jane.admin@acme.com\"\n}" }, "url": { "raw": "{{base_url}}/organizations", "host": ["{{base_url}}"], "path": ["organizations"] } },
+              "status": "Created", "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "cookie": [],
+              "body": "{\n  \"id\": \"org-uuid-9999\",\n  \"name\": \"Acme Corporation\",\n  \"azureTenantId\": \"7915d0a8-0a13-4824-ba52-43a1ad694c42\",\n  \"status\": \"ACTIVE\",\n  \"createdAt\": \"2026-03-19T10:00:00.000Z\",\n  \"orgAdmin\": {\n    \"id\": \"c3d4e5f6-a7b8-9012-cdef-123456789012\",\n    \"email\": \"jane.admin@acme.com\",\n    \"role\": \"ORG_ADMIN\",\n    \"status\": \"ACTIVE\"\n  }\n}"
+            },
+            {
+              "name": "409 Conflict – Tenant Already Exists",
+              "originalRequest": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"name\": \"Duplicate\",\n  \"azureTenantId\": \"7915d0a8-0a13-4824-ba52-43a1ad694c42\",\n  \"orgAdminEmail\": \"admin@duplicate.com\"\n}" }, "url": { "raw": "{{base_url}}/organizations", "host": ["{{base_url}}"], "path": ["organizations"] } },
+              "status": "Conflict", "code": 409,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "cookie": [],
+              "body": "{\n  \"statusCode\": 409,\n  \"message\": \"An organization with this Azure tenant ID already exists\"\n}"
+            },
+            {
+              "name": "400 Bad Request – Missing Fields",
+              "originalRequest": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"name\": \"No Admin Email\"\n}" }, "url": { "raw": "{{base_url}}/organizations", "host": ["{{base_url}}"], "path": ["organizations"] } },
+              "status": "Bad Request", "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "cookie": [],
+              "body": "{\n  \"statusCode\": 400,\n  \"message\": [\"orgAdminEmail must be an email\"],\n  \"error\": \"Bad Request\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "List All Organizations",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/organizations", "host": ["{{base_url}}"], "path": ["organizations"] },
+            "description": "List all organizations on the platform. Requires ADMIN role."
+          },
+          "response": [
+            {
+              "name": "200 OK – Organization List",
+              "originalRequest": { "method": "GET", "header": [], "url": { "raw": "{{base_url}}/organizations", "host": ["{{base_url}}"], "path": ["organizations"] } },
+              "status": "OK", "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "cookie": [],
+              "body": "[\n  {\n    \"id\": \"org-uuid-1234\",\n    \"name\": \"Acme Corporation\",\n    \"azureTenantId\": \"7915d0a8-0a13-4824-ba52-43a1ad694c42\",\n    \"status\": \"ACTIVE\",\n    \"createdAt\": \"2026-01-01T08:00:00.000Z\"\n  },\n  {\n    \"id\": \"org-uuid-5678\",\n    \"name\": \"Beta Corp\",\n    \"azureTenantId\": \"8826e1b9-1b24-5935-cb63-54b2be805d53\",\n    \"status\": \"ACTIVE\",\n    \"createdAt\": \"2026-02-01T08:00:00.000Z\"\n  }\n]"
+            }
+          ]
+        },
+        {
+          "name": "Get Organization by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/organizations/:orgId",
+              "host": ["{{base_url}}"],
+              "path": ["organizations", ":orgId"],
+              "variable": [{ "key": "orgId", "value": "org-uuid-here" }]
+            },
+            "description": "Get a specific organization by ID. Requires ADMIN role."
+          },
+          "response": [
+            {
+              "name": "200 OK – Organization",
+              "originalRequest": { "method": "GET", "header": [], "url": { "raw": "{{base_url}}/organizations/:orgId", "host": ["{{base_url}}"], "path": ["organizations", ":orgId"], "variable": [{ "key": "orgId", "value": "org-uuid-1234" }] } },
+              "status": "OK", "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "cookie": [],
+              "body": "{\n  \"id\": \"org-uuid-1234\",\n  \"name\": \"Acme Corporation\",\n  \"azureTenantId\": \"7915d0a8-0a13-4824-ba52-43a1ad694c42\",\n  \"status\": \"ACTIVE\",\n  \"createdAt\": \"2026-01-01T08:00:00.000Z\"\n}"
+            },
+            {
+              "name": "404 Not Found",
+              "originalRequest": { "method": "GET", "header": [], "url": { "raw": "{{base_url}}/organizations/:orgId", "host": ["{{base_url}}"], "path": ["organizations", ":orgId"], "variable": [{ "key": "orgId", "value": "bad-id" }] } },
+              "status": "Not Found", "code": 404,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "cookie": [],
+              "body": "{\n  \"statusCode\": 404,\n  \"message\": \"Organization not found\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Update Organization",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Acme Corporation Rebranded\"\n}" },
+            "url": {
+              "raw": "{{base_url}}/organizations/:orgId",
+              "host": ["{{base_url}}"],
+              "path": ["organizations", ":orgId"],
+              "variable": [{ "key": "orgId", "value": "org-uuid-here" }]
+            },
+            "description": "Update an organization's details. Requires ADMIN role."
+          },
+          "response": [
+            {
+              "name": "200 OK – Updated Organization",
+              "originalRequest": { "method": "PUT", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"name\": \"Acme Corporation Rebranded\"\n}" }, "url": { "raw": "{{base_url}}/organizations/:orgId", "host": ["{{base_url}}"], "path": ["organizations", ":orgId"], "variable": [{ "key": "orgId", "value": "org-uuid-1234" }] } },
+              "status": "OK", "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "cookie": [],
+              "body": "{\n  \"id\": \"org-uuid-1234\",\n  \"name\": \"Acme Corporation Rebranded\",\n  \"azureTenantId\": \"7915d0a8-0a13-4824-ba52-43a1ad694c42\",\n  \"status\": \"ACTIVE\",\n  \"createdAt\": \"2026-01-01T08:00:00.000Z\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Set ORG_ADMIN",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"jane.admin@acme.com\"\n}" },
+            "url": {
+              "raw": "{{base_url}}/organizations/:orgId/org-admin",
+              "host": ["{{base_url}}"],
+              "path": ["organizations", ":orgId", "org-admin"],
+              "variable": [{ "key": "orgId", "value": "org-uuid-here" }]
+            },
+            "description": "Assign or replace the ORG_ADMIN for an organization using the person's EMAIL address (you don't need their UUID).\n\n- If the user has already logged in → they are promoted immediately.\n- If they have NOT logged in yet → a placeholder account is pre-created with ORG_ADMIN role. When they first sign in via Microsoft, the account is claimed automatically.\n\nThe previous ORG_ADMIN (if any) is demoted to MEMBER. Requires ADMIN role."
+          },
+          "response": [
+            {
+              "name": "200 OK – ORG_ADMIN Set (existing user)",
+              "originalRequest": { "method": "PATCH", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"email\": \"jane.admin@acme.com\"\n}" }, "url": { "raw": "{{base_url}}/organizations/:orgId/org-admin", "host": ["{{base_url}}"], "path": ["organizations", ":orgId", "org-admin"], "variable": [{ "key": "orgId", "value": "org-uuid-1234" }] } },
+              "status": "OK", "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "cookie": [],
+              "body": "{\n  \"id\": \"b2c3d4e5-f6a7-8901-bcde-f12345678901\",\n  \"orgId\": \"org-uuid-1234\",\n  \"email\": \"jane.admin@acme.com\",\n  \"name\": \"Jane Smith\",\n  \"role\": \"ORG_ADMIN\",\n  \"status\": \"ACTIVE\",\n  \"createdAt\": \"2026-01-02T09:00:00.000Z\"\n}"
+            },
+            {
+              "name": "200 OK – ORG_ADMIN Pre-created (user not yet logged in)",
+              "originalRequest": { "method": "PATCH", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"email\": \"newadmin@acme.com\"\n}" }, "url": { "raw": "{{base_url}}/organizations/:orgId/org-admin", "host": ["{{base_url}}"], "path": ["organizations", ":orgId", "org-admin"], "variable": [{ "key": "orgId", "value": "org-uuid-1234" }] } },
+              "status": "OK", "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "cookie": [],
+              "body": "{\n  \"id\": \"c3d4e5f6-a7b8-9012-cdef-123456789012\",\n  \"orgId\": \"org-uuid-1234\",\n  \"email\": \"newadmin@acme.com\",\n  \"name\": \"newadmin\",\n  \"role\": \"ORG_ADMIN\",\n  \"status\": \"ACTIVE\",\n  \"createdAt\": \"2026-03-19T10:00:00.000Z\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Deactivate Organization",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/organizations/:orgId/deactivate",
+              "host": ["{{base_url}}"],
+              "path": ["organizations", ":orgId", "deactivate"],
+              "variable": [{ "key": "orgId", "value": "org-uuid-here" }]
+            },
+            "description": "Deactivate an organization (sets status to INACTIVE). Requires ADMIN role."
+          },
+          "response": [
+            {
+              "name": "200 OK – Organization Deactivated",
+              "originalRequest": { "method": "PATCH", "header": [], "url": { "raw": "{{base_url}}/organizations/:orgId/deactivate", "host": ["{{base_url}}"], "path": ["organizations", ":orgId", "deactivate"], "variable": [{ "key": "orgId", "value": "org-uuid-1234" }] } },
+              "status": "OK", "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "cookie": [],
+              "body": "{\n  \"id\": \"org-uuid-1234\",\n  \"name\": \"Acme Corporation\",\n  \"azureTenantId\": \"7915d0a8-0a13-4824-ba52-43a1ad694c42\",\n  \"status\": \"INACTIVE\",\n  \"createdAt\": \"2026-01-01T08:00:00.000Z\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Delete Organization",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/organizations/:orgId",
+              "host": ["{{base_url}}"],
+              "path": ["organizations", ":orgId"],
+              "variable": [{ "key": "orgId", "value": "org-uuid-here" }]
+            },
+            "description": "Hard delete an organization. Requires ADMIN role. Use with extreme caution."
+          },
+          "response": [
+            {
+              "name": "204 No Content – Deleted",
+              "originalRequest": { "method": "DELETE", "header": [], "url": { "raw": "{{base_url}}/organizations/:orgId", "host": ["{{base_url}}"], "path": ["organizations", ":orgId"], "variable": [{ "key": "orgId", "value": "org-uuid-1234" }] } },
+              "status": "No Content", "code": 204,
+              "_postman_previewlanguage": "json",
+              "header": [],
+              "cookie": [],
+              "body": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
